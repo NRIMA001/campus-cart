@@ -1,79 +1,63 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import logo from "../logo.png";
+import "./Login.css";
 
 function Login() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  async function handleLogin(e) {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      await axios.post("http://localhost:5000/login", {
         email,
         password,
       });
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-
       navigate("/dashboard");
-    } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+    } catch (error) {
+      alert("Invalid credentials");
     }
-  }
+  };
 
   return (
-    <div style={styles.container}>
-      <form onSubmit={handleLogin} style={styles.form}>
-        <h2>Campus Cart Login</h2>
+    <div className="login-wrapper">
+      <div className="login-card">
+        <img src={logo} alt="CampusCart Logo" className="logo" />
 
-        <input
-          type="email"
-          placeholder="Student Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <h2>Welcome Back</h2>
+        <p className="subtitle">Login to your account</p>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-        <button type="submit">Login</button>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-        <p>
+          <button type="submit">Login</button>
+        </form>
+
+        <p className="register-text">
           Don’t have an account? <Link to="/register">Register</Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    height: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#f4f6f9",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-    padding: "40px",
-    background: "white",
-    borderRadius: "10px",
-    boxShadow: "0 5px 20px rgba(0,0,0,0.1)",
-    width: "320px",
-  },
-};
 
 export default Login;
