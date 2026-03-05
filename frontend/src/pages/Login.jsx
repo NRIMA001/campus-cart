@@ -9,18 +9,20 @@ function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
+  const handleLogin = async () => {
     try {
-      await axios.post("http://localhost:5000/login", {
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
         email,
-        password,
+        password
       });
-
+  
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+  
       navigate("/dashboard");
-    } catch (error) {
-      alert("Invalid credentials");
+  
+    } catch (err) {
+      alert("Login failed");
     }
   };
 

@@ -5,7 +5,7 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-// simple student email rule (.edu). You can customize later.
+// email rule (.edu). 
 function isStudentEmail(email) {
   return email.toLowerCase().endsWith(".edu");
 }
@@ -15,36 +15,26 @@ router.post("/register", async (req, res) => {
   try {
     const { fullName, email, university, password } = req.body;
 
-    if (!fullName || !email || !university || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    if (!isStudentEmail(email)) {
-      return res.status(400).json({ message: "Use a valid student email (.edu)" });
-    }
-
-    if (password.length < 8) {
-      return res.status(400).json({ message: "Password must be at least 8 characters" });
-    }
-
-    const existing = await User.findOne({ email: email.toLowerCase() });
-    if (existing) return res.status(409).json({ message: "Email already registered" });
-
-    const passwordHash = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
       fullName,
-      email: email.toLowerCase(),
+      email,
       university,
-      passwordHash
+      passwordHash: hashedPassword,
     });
 
-    return res.status(201).json({
-      message: "Account created",
-      user: { id: user._id, fullName: user.fullName, email: user.email, university: user.university }
-    });
-  } catch (err) {
-    return res.status(500).json({ message: "Server error", error: err.message });
+    res.json({ message: "User created successfully" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Registration failed" });
   }
 });
 
@@ -66,7 +56,13 @@ router.post("/login", async (req, res) => {
     return res.json({
       message: "Login successful",
       token,
-      user: { id: user._id, fullName: user.fullName, email: user.email, university: user.university }
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        university: user.university,
+        role: user.role
+      }
     });
   } catch (err) {
     return res.status(500).json({ message: "Server error", error: err.message });

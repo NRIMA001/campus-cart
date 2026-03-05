@@ -6,6 +6,9 @@ const connectDB = require("./src/config/db");
 const authRoutes = require("./src/routes/authRoutes");
 const userRoutes = require("./src/routes/userRoutes");
 
+const User = require("./src/models/User");
+const bcrypt = require("bcrypt");
+
 const app = express();
 
 app.use(cors({ origin: "http://localhost:5173" }));
@@ -28,4 +31,28 @@ connectDB(process.env.MONGO_URI)
     console.error("❌ DB connection failed:", err.message);
     process.exit(1);
   });
+
+  async function createAdmin() {
+    try {
+      const admin = await User.findOne({ email: "admin" });
+  
+      if (!admin) {
+        const hash = await bcrypt.hash("admin", 10);
+  
+        await User.create({
+          fullName: "Administrator",
+          email: "admin",
+          university: "Campus Cart",
+          passwordHash: hash,
+          role: "admin"
+        });
+  
+        console.log("✅ Admin user created (admin/admin)");
+      }
+    } catch (error) {
+      console.error("Admin creation error:", error);
+    }
+  }
+  
+  createAdmin();
   
