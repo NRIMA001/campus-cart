@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import logo from "../logo.png";
 import "./Login.css";
 
-function Login() {
+function Login(){ 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
