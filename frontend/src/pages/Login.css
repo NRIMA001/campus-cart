@@ -1,83 +1,97 @@
 /* Full page background */
 .login-wrapper {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  /* Login card */
-  .login-card {
-    background: white;
-    padding: 40px;
-    width: 350px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  /* Logo styling */
-  .logo {
-    width: 110px;
-    margin-bottom: 20px;
-  }
-  
-  /* Title */
-  .login-card h2 {
-    margin-bottom: 5px;
-    font-weight: 600;
-  }
-  
-  .subtitle {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 25px;
-  }
-  
-  /* Inputs */
-  .login-card input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 14px;
-    transition: 0.2s ease;
-  }
-  
-  .login-card input:focus {
-    outline: none;
-    border-color: #000;
-  }
-  
-  /* Button */
-  .login-card button {
-    width: 100%;
-    padding: 12px;
-    background-color: #000;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.3s ease;
-  }
-  
-  .login-card button:hover {
-    background-color: #333;
-  }
-  
-  /* Register text */
-  .register-text {
-    margin-top: 20px;
-    font-size: 14px;
-  }
-  
-  .register-text a {
-    text-decoration: none;
-    font-weight: 500;
-    color: #000;
-  }
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #eef1f7 0%, #dde3ef 100%);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Login card */
+.login-card {
+  background: white;
+  padding: 48px 44px;
+  width: 400px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  text-align: center;
+}
+
+/* Logo styling — centered, right above the heading */
+.logo {
+  display: block;
+  margin: 0 auto 20px auto;
+  width: 200px;
+}
+
+/* Title */
+.login-card h2 {
+  margin-bottom: 6px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+/* Inputs */
+.login-card input {
+  width: 100%;
+  padding: 13px 16px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1.5px solid #e5e5e5;
+  font-size: 14px;
+  background: #fafafa;
+  box-sizing: border-box;
+  transition: 0.2s ease;
+}
+
+.login-card input:focus {
+  outline: none;
+  border-color: #111;
+  background: white;
+}
+
+/* Button */
+.login-card button {
+  width: 100%;
+  padding: 13px;
+  background-color: #111;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: 0.2s ease;
+}
+
+.login-card button:hover {
+  background-color: #333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Register text */
+.register-text {
+  margin-top: 22px;
+  font-size: 14px;
+  color: #666;
+}
+
+.register-text a {
+  text-decoration: none;
+  font-weight: 600;
+  color: #000;
+}
+
+.register-text a:hover {
+  text-decoration: underline;
+}
