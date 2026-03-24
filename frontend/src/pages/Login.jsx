@@ -9,7 +9,9 @@ function Login(){
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+  
     try {
       const res = await axios.post("http://localhost:5000/api/auth/login", {
         email,
@@ -22,7 +24,7 @@ function Login(){
       navigate("/dashboard");
   
     } catch (err) {
-      alert("Login failed");
+      alert(err.response?.data?.message || "Login failed");
     }
   };
 

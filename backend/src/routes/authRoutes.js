@@ -14,8 +14,9 @@ function isStudentEmail(email) {
 router.post("/register", async (req, res) => {
   try {
     const { fullName, email, university, password } = req.body;
+    const normalizedEmail = email.toLowerCase();
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: normalizedEmail });
 
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
@@ -25,7 +26,7 @@ router.post("/register", async (req, res) => {
 
     const user = await User.create({
       fullName,
-      email,
+      email: normalizedEmail,
       university,
       passwordHash: hashedPassword,
     });
@@ -34,7 +35,7 @@ router.post("/register", async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Registration failed" });
+    res.status(500).json({ message: error.message });
   }
 });
 
