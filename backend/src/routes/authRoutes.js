@@ -10,32 +10,36 @@ function isStudentEmail(email) {
   return email.toLowerCase().endsWith(".edu");
 }
 
-// POST /api/auth/register
 router.post("/register", async (req, res) => {
   try {
+    console.log("REGISTER BODY:", req.body);
+
     const { fullName, email, university, password } = req.body;
-    const normalizedEmail = email.toLowerCase();
+
+    if (!fullName || !email || !university || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
 
     const existingUser = await User.findOne({ email: normalizedEmail });
-
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
-      fullName,
+    await User.create({
+      fullName: fullName.trim(),
       email: normalizedEmail,
-      university,
+      university: university.trim(),
       passwordHash: hashedPassword,
     });
 
-    res.json({ message: "User created successfully" });
-
+    return res.status(201).json({ message: "User created successfully" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    console.error("REGISTER ERROR:", error);
+    return res.status(500).json({ message: error.message });
   }
 });
 

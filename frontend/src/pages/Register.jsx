@@ -24,7 +24,8 @@ function Register() {
       alert("Account created! Please login.");
       navigate("/");
     } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
+      console.log("REGISTER FRONTEND ERROR:", err);
+      alert(err.response?.data?.message || err.message || "Registration failed");
     }
   }
 
