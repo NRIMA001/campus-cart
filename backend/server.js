@@ -11,7 +11,10 @@ const bcrypt = require("bcrypt");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:5174"],
+  credentials: true
+}));
 app.use(express.json());
 
 // Health check
@@ -25,10 +28,11 @@ const PORT = process.env.PORT || 5000;
 
 connectDB(process.env.MONGO_URI)
   .then(() => {
-    app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+    createAdmin();
+    app.listen(PORT, () => console.log(`!!Server running on http://localhost:${PORT}`));
   })
   .catch((err) => {
-    console.error("❌ DB connection failed:", err.message);
+    console.error("!!(X) DB connection failed:", err.message);
     process.exit(1);
   });
 
@@ -54,5 +58,5 @@ connectDB(process.env.MONGO_URI)
     }
   }
   
-  createAdmin();
+  
   

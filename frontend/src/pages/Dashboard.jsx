@@ -17,6 +17,12 @@ export default function Dashboard() {
   const [activeLink, setActiveLink] = useState("Rent");
   const [favorites, setFavorites] = useState([]);
 
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "/"; // redirect to login
+};  
+
   const user = (() => {
     try { return JSON.parse(localStorage.getItem("user")); } catch { return null; }
   })();
@@ -461,12 +467,27 @@ export default function Dashboard() {
           </nav>
 
           <div className="sidebar-footer">
-            <div className="user-pill">
+            <div className="user-pill" style={{ marginBottom: "12px" }}>
               <div className="user-avatar">
-                {user?.name ? user.name[0].toUpperCase() : "U"}
+                {user?.fullName ? user.fullName[0].toUpperCase() : "U"}
               </div>
-              <div className="user-name">{user?.name || "Student"}</div>
+              <div className="user-name">{user?.fullName || "Student"}</div>
             </div>
+            <button
+              onClick={handleLogout}
+              style={{
+                width: "100%",
+                padding: "8px",
+                borderRadius: "8px",
+                border: "none",
+                background: "#dc503c",
+                color: "white",
+                fontSize: "12px",
+                cursor: "pointer"
+              }}
+            >
+              Logout
+            </button>
           </div>
         </aside>
 
