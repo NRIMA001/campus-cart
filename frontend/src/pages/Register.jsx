@@ -2,9 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import logo from "../logo.png";
-import "./Register.css";
 
-function Register() {
+export default function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     fullName: "",
@@ -22,7 +21,7 @@ function Register() {
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, form);
       alert("Account created! Please login.");
-      navigate("/");
+      navigate("/login");
     } catch (err) {
       console.log("REGISTER FRONTEND ERROR:", err);
       alert(err.response?.data?.message || err.message || "Registration failed");
@@ -30,26 +29,24 @@ function Register() {
   }
 
   return (
-    <div className="register-wrapper">
-      <div className="register-card">
+    <div className="auth-wrapper">
+      <div className="auth-card">
         <img src={logo} alt="CampusCart" className="logo" />
-        <h2>Create Account </h2>
+        <h2>Create Account</h2>
         <p className="subtitle">Join your campus marketplace</p>
 
         <form onSubmit={handleRegister}>
           <input name="fullName" placeholder="Full Name" onChange={handleChange} required />
-          <input name="email" type="email" placeholder="Student Email" onChange={handleChange} required />
+          <input name="email" type="email" placeholder="Student Email (.edu)" onChange={handleChange} required />
           <input name="university" placeholder="University Name" onChange={handleChange} required />
           <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
           <button type="submit">Create Account</button>
         </form>
 
-        <p className="login-text">
-          Already have an account? <Link to="/">Login</Link>
+        <p className="auth-link">
+          Already have an account? <Link to="/login">Login</Link>
         </p>
       </div>
     </div>
   );
 }
-
-export default Register;

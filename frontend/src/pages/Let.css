@@ -1,0 +1,66 @@
+.let-form {
+  padding: 28px;
+  margin-bottom: 28px;
+}
+
+.let-form h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.let-form-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+}
+
+.let-upload-area {
+  width: 100%;
+}
+
+.upload-placeholder {
+  width: 100%;
+  height: 200px;
+  border: 2px dashed var(--color-border-medium);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.upload-placeholder:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: rgba(220, 80, 60, 0.03);
+}
+
+.upload-placeholder span {
+  font-size: 32px;
+}
+
+.upload-placeholder p {
+  font-size: 12px;
+}
+
+.let-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.let-form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 700px) {
+  .let-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

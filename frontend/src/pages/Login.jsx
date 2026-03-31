@@ -2,37 +2,55 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import logo from "../logo.png";
-import "./Login.css";
 
-function Login(){ 
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
-    try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-        email,
-        password
-      });
-  
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-  
-      navigate("/dashboard");
-  
-    } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+    // Try real backend if API URL is configured
+    if (apiUrl) {
+      try {
+        const res = await axios.post(`${apiUrl}/api/auth/login`, {
+          email,
+          password,
+        });
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        navigate("/dashboard");
+        return;
+      } catch (err) {
+        alert(err.response?.data?.message || "Login failed");
+        return;
+      }
     }
+
+    // Dev mode — no backend needed
+    if (!email || !password) {
+      alert("Please enter email and password");
+      return;
+    }
+    const mockUser = {
+      id: "dev-user-1",
+      fullName: email.split("@")[0] || "Student",
+      email,
+      university: "SUNY Plattsburgh",
+      role: "student",
+    };
+    localStorage.setItem("token", "dev-token");
+    localStorage.setItem("user", JSON.stringify(mockUser));
+    navigate("/dashboard");
   };
 
   return (
-    <div className="login-wrapper">
-      <div className="login-card">
+    <div className="auth-wrapper">
+      <div className="auth-card">
         <img src={logo} alt="CampusCart Logo" className="logo" />
-
         <h2>Welcome Back</h2>
         <p className="subtitle">Login to your account</p>
 
@@ -44,7 +62,6 @@ function Login(){
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-
           <input
             type="password"
             placeholder="Password"
@@ -52,16 +69,13 @@ function Login(){
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-
           <button type="submit">Login</button>
         </form>
 
-        <p className="register-text">
-          Don’t have an account? <Link to="/register">Register</Link>
+        <p className="auth-link">
+          Don't have an account? <Link to="/register">Register</Link>
         </p>
       </div>
     </div>
   );
 }
-
-export default Login;
