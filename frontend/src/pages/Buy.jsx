@@ -37,7 +37,7 @@ export default function Buy() {
         <CategoryTabs active={category} onChange={setCategory} />
         {filtered.length === 0 ? (
           <EmptyState
-            icon="🛒"
+            icon="cart"
             title="No items found"
             message={search ? `No items match "${search}"` : "No items in this category yet"}
           />

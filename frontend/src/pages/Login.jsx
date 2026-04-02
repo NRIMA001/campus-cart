@@ -1,50 +1,42 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import logo from "../logo.png";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail]     = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError]     = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
 
-    const apiUrl = import.meta.env.VITE_API_URL;
-
-    // Try real backend if API URL is configured
-    if (apiUrl) {
-      try {
-        const res = await axios.post(`${apiUrl}/api/auth/login`, {
-          email,
-          password,
-        });
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        navigate("/dashboard");
-        return;
-      } catch (err) {
-        alert(err.response?.data?.message || "Login failed");
-        return;
-      }
-    }
-
-    // Dev mode — no backend needed
     if (!email || !password) {
-      alert("Please enter email and password");
+      setError("Please enter email and password");
       return;
     }
-    const mockUser = {
-      id: "dev-user-1",
-      fullName: email.split("@")[0] || "Student",
-      email,
-      university: "SUNY Plattsburgh",
-      role: "student",
-    };
-    localStorage.setItem("token", "dev-token");
-    localStorage.setItem("user", JSON.stringify(mockUser));
-    navigate("/dashboard");
+
+    setLoading(true);
+    try {
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (err) {
+      // Map Firebase error codes to friendly messages
+      const code = err.code;
+      if (code === "auth/user-not-found" || code === "auth/wrong-password" || code === "auth/invalid-credential") {
+        setError("Invalid email or password");
+      } else if (code === "auth/too-many-requests") {
+        setError("Too many attempts. Please try again later.");
+      } else {
+        setError(err.message);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,6 +45,8 @@ export default function Login() {
         <img src={logo} alt="CampusCart Logo" className="logo" />
         <h2>Welcome Back</h2>
         <p className="subtitle">Login to your account</p>
+
+        {error && <p className="auth-error">{error}</p>}
 
         <form onSubmit={handleLogin}>
           <input
@@ -69,7 +63,9 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Login</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in…" : "Login"}
+          </button>
         </form>
 
         <p className="auth-link">

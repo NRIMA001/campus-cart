@@ -1,7 +1,4 @@
-/* ============================================================
-   CAMPUS CART — Global Design System
-   ============================================================ */
-
+/* Global styles */
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 /* ---------- Design Tokens ---------- */
@@ -434,6 +431,24 @@ textarea.input {
 .auth-card .auth-link a:hover {
   color: var(--color-accent-hover);
   text-decoration: underline;
+}
+
+.auth-error {
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  text-align: left;
+  animation: authFadeIn 0.3s ease;
+}
+
+.auth-card button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* ---------- Scrollbar ---------- */

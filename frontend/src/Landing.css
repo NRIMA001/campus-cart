@@ -1,6 +1,3 @@
-/* ============================================================
-   Landing Page Styles
-   ============================================================ */
 
 .landing {
   min-height: 100vh;
@@ -136,8 +133,15 @@
   transform: translateY(-2px);
 }
 
-.hero-card span {
-  font-size: 28px;
+.hero-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(220, 80, 60, 0.15);
+  color: #f08070;
   flex-shrink: 0;
 }
 
@@ -196,7 +200,14 @@
 }
 
 .feature-icon {
-  font-size: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(220, 80, 60, 0.12);
+  color: #f08070;
   margin-bottom: 16px;
 }
 

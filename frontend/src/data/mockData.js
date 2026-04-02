@@ -1,5 +1,3 @@
-// Centralized mock data — replace with real API calls once DB is ready
-
 export const mockRentItems = [
   { id: 1, name: "DSLR Camera", price: "$8/day", category: "Devices", image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80", status: "Available" },
   { id: 2, name: "Electric Drill", price: "$3/day", category: "Tools", image: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&q=80", status: "Available" },

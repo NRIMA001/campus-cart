@@ -3,6 +3,7 @@ import Topbar from "../components/Topbar";
 import ItemGrid from "../components/ItemGrid";
 import ItemCard from "../components/ItemCard";
 import EmptyState from "../components/EmptyState";
+import Icon from "../components/Icon";
 import { mockMyRentals } from "../data/mockData";
 import "./Let.css";
 
@@ -50,7 +51,7 @@ export default function Let() {
             <div className="let-form-grid">
               <div className="let-upload-area">
                 <div className="upload-placeholder">
-                  <span>📁</span>
+                  <span><Icon name="upload" size={24} color="var(--color-text-muted)" /></span>
                   <p>Click to upload image</p>
                 </div>
               </div>
@@ -76,7 +77,7 @@ export default function Let() {
 
         {items.length === 0 ? (
           <EmptyState
-            icon="📦"
+            icon="box"
             title="No listings yet"
             message="Click 'Add New Item' to list your first item for rent"
           />

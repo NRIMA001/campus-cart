@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Icon from "./Icon";
 import "./ItemCard.css";
 
 export default function ItemCard({
@@ -31,10 +32,10 @@ export default function ItemCard({
         {showOwnerActions ? (
           <div className="card-actions">
             <button className="btn btn-sm btn-outline" onClick={e => { e.stopPropagation(); onEdit?.(item); }}>
-              ✏️ Edit
+              <Icon name="edit" size={13} /> Edit
             </button>
             <button className="btn btn-sm btn-danger" onClick={e => { e.stopPropagation(); onDelete?.(item); }}>
-              🗑 Delete
+              <Icon name="trash" size={13} /> Remove
             </button>
           </div>
         ) : (
@@ -49,9 +50,9 @@ export default function ItemCard({
               <button
                 className="btn-save"
                 onClick={e => { e.stopPropagation(); onFavorite(item.id); }}
-                style={{ color: isFavorited ? "var(--color-accent)" : "var(--color-text-muted)", fontSize: "16px" }}
+                style={{ color: isFavorited ? "var(--color-accent)" : "var(--color-text-muted)" }}
               >
-                {isFavorited ? "♥" : "♡"}
+                <Icon name={isFavorited ? "heart" : "heart-outline"} size={16} strokeWidth={isFavorited ? 2.5 : 1.8} />
               </button>
             )}
           </div>

@@ -1,3 +1,4 @@
+import Icon from "./Icon";
 import "./Topbar.css";
 
 export default function Topbar({ title, subtitle, searchValue, onSearchChange, actions }) {
@@ -10,7 +11,7 @@ export default function Topbar({ title, subtitle, searchValue, onSearchChange, a
       <div className="topbar-right">
         {onSearchChange && (
           <div className="search-wrap">
-            <span className="search-icon">🔍</span>
+            <span className="search-icon"><Icon name="search" size={15} color="var(--color-text-muted)" /></span>
             <input
               className="search-input"
               placeholder="Search items..."

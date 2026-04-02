@@ -3,6 +3,7 @@ import Topbar from "../components/Topbar";
 import ItemGrid from "../components/ItemGrid";
 import ItemCard from "../components/ItemCard";
 import EmptyState from "../components/EmptyState";
+import Icon from "../components/Icon";
 import { mockMySaleItems } from "../data/mockData";
 import "./Sell.css";
 
@@ -49,7 +50,7 @@ export default function Sell() {
             <div className="sell-form-grid">
               <div className="sell-upload-area">
                 <div className="upload-placeholder">
-                  <span>📁</span>
+                  <span><Icon name="upload" size={24} color="var(--color-text-muted)" /></span>
                   <p>Click to upload image</p>
                 </div>
               </div>
@@ -75,7 +76,7 @@ export default function Sell() {
 
         {items.length === 0 ? (
           <EmptyState
-            icon="💰"
+            icon="dollar"
             title="No items listed"
             message="Click 'List New Item' to sell something"
           />

@@ -27,7 +27,7 @@ export default function Favorites() {
       <div className="page-content">
         {favoriteItems.length === 0 ? (
           <EmptyState
-            icon="♥"
+            icon="heart"
             title="No favorites yet"
             message="Browse items and click the heart to save them here"
           />
