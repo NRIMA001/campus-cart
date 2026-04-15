@@ -11,6 +11,7 @@ const browseLinks = [
   { label: "Buy",       path: "/buy",       icon: "cart" },
   { label: "Sell",      path: "/sell",      icon: "dollar" },
   { label: "Favorites", path: "/favorites", icon: "heart" },
+  { label: "Cart",      path: "/checkout",  icon: "shopping-cart" },
 ];
 
 const supportLinks = [

@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
 import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Landing from "./Landing";
@@ -12,6 +13,7 @@ import Buy from "./pages/Buy";
 import Sell from "./pages/Sell";
 import Favorites from "./pages/Favorites";
 import ItemDetail from "./pages/ItemDetail";
+import Checkout from "./pages/Checkout";
 import Messages from "./pages/Messages";
 import About from "./pages/About";
 import Support from "./pages/Support";
@@ -22,32 +24,35 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+        <CartProvider>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          <Route
-            element={
-              <ProtectedRoute>
-                <DashboardLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/rent" element={<Rent />} />
-            <Route path="/let" element={<Let />} />
-            <Route path="/buy" element={<Buy />} />
-            <Route path="/sell" element={<Sell />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/item/:id" element={<ItemDetail />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-          </Route>
-        </Routes>
+            <Route
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/rent" element={<Rent />} />
+              <Route path="/let" element={<Let />} />
+              <Route path="/buy" element={<Buy />} />
+              <Route path="/sell" element={<Sell />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/item/:id" element={<ItemDetail />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+            </Route>
+          </Routes>
+        </CartProvider>
       </AuthProvider>
     </Router>
   );

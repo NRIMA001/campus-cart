@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "./Icon";
 import "./ItemCard.css";
@@ -13,11 +14,23 @@ export default function ItemCard({
   onDelete,
 }) {
   const navigate = useNavigate();
+  const [justAdded, setJustAdded] = useState(false);
+
+  const handleAction = (e) => {
+    e.stopPropagation();
+    if (onAction) {
+      onAction(item);
+      if (actionLabel.toLowerCase().includes("cart")) {
+        setJustAdded(true);
+        setTimeout(() => setJustAdded(false), 1200);
+      }
+    }
+  };
 
   return (
     <div className="item-card card" onClick={() => navigate(`/item/${item.id}`)}>
       <div className="card-img-wrap">
-        <img className="card-img" src={item.image} alt={item.name} />
+        <img className="card-img" src={item.image} alt={item.name} loading="lazy" />
         <span className="badge badge-navy card-category">{item.category}</span>
         {item.status && (
           <span className={`badge card-status ${item.status === "Available" ? "badge-success" : "badge-warning"}`}>
@@ -28,6 +41,9 @@ export default function ItemCard({
       <div className="card-body">
         <div className="card-name">{item.name}</div>
         <div className="card-price">{item.price}</div>
+        {item.condition && (
+          <div className="card-condition">{item.condition}</div>
+        )}
 
         {showOwnerActions ? (
           <div className="card-actions">
@@ -41,10 +57,14 @@ export default function ItemCard({
         ) : (
           <div className="card-actions">
             <button
-              className="btn btn-primary card-action-btn"
-              onClick={e => { e.stopPropagation(); onAction?.(item); }}
+              className={`btn card-action-btn ${justAdded ? "btn-added" : "btn-primary"}`}
+              onClick={handleAction}
             >
-              {actionLabel}
+              {justAdded ? (
+                <><Icon name="check-circle" size={13} /> Added!</>
+              ) : (
+                <>{actionLabel.toLowerCase().includes("cart") && <Icon name="shopping-cart" size={13} />}{actionLabel}</>
+              )}
             </button>
             {onFavorite && (
               <button

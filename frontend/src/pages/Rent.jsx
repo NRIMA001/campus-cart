@@ -1,14 +1,18 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Topbar from "../components/Topbar";
 import CategoryTabs from "../components/CategoryTabs";
 import ItemGrid from "../components/ItemGrid";
 import ItemCard from "../components/ItemCard";
 import EmptyState from "../components/EmptyState";
+import Icon from "../components/Icon";
+import { useCart } from "../contexts/CartContext";
 import { mockRentItems } from "../data/mockData";
 
 export default function Rent() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const { addToCart, cartCount } = useCart();
   const [favorites, setFavorites] = useState(() => {
     try { return JSON.parse(localStorage.getItem("favorites")) || []; } catch { return []; }
   });
@@ -19,6 +23,10 @@ export default function Rent() {
       localStorage.setItem("favorites", JSON.stringify(next));
       return next;
     });
+  };
+
+  const handleAddToCart = (item) => {
+    addToCart(item, 1);
   };
 
   const filtered = mockRentItems
@@ -32,6 +40,23 @@ export default function Rent() {
         subtitle="Find items from fellow students"
         searchValue={search}
         onSearchChange={setSearch}
+        actions={
+          <Link to="/checkout" className="btn btn-outline" style={{ position: "relative" }}>
+            <Icon name="shopping-cart" size={15} />
+            Cart
+            {cartCount > 0 && (
+              <span style={{
+                position: "absolute", top: -4, right: -6,
+                background: "var(--color-accent)", color: "white",
+                fontSize: 10, fontWeight: 700, minWidth: 18, height: 18,
+                borderRadius: 9, display: "flex", alignItems: "center",
+                justifyContent: "center", padding: "0 4px",
+              }}>
+                {cartCount}
+              </span>
+            )}
+          </Link>
+        }
       />
       <div className="page-content">
         <CategoryTabs active={category} onChange={setCategory} />
@@ -47,7 +72,8 @@ export default function Rent() {
               <ItemCard
                 key={item.id}
                 item={item}
-                actionLabel="Rent Now"
+                actionLabel="Add to Cart"
+                onAction={handleAddToCart}
                 isFavorited={favorites.includes(item.id)}
                 onFavorite={toggleFavorite}
               />
