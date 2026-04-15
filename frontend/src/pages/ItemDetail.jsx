@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
 import Topbar from "../components/Topbar";
-import Icon from "../components/Icon";
 import { getItemById, mockRentItems } from "../data/mockData";
 import ItemCard from "../components/ItemCard";
 import EmptyState from "../components/EmptyState";
@@ -16,7 +15,7 @@ export default function ItemDetail() {
       <>
         <Topbar title="Item Not Found" />
         <div className="page-content">
-          <EmptyState icon="alert-circle" title="Item not found" message="This item may have been removed" />
+          <EmptyState icon="😕" title="Item not found" message="This item may have been removed" />
         </div>
       </>
     );
@@ -29,7 +28,7 @@ export default function ItemDetail() {
       <Topbar
         title={item.name}
         actions={
-          <button className="btn btn-ghost" onClick={() => navigate(-1)}><Icon name="arrow-left" size={14} /> Back</button>
+          <button className="btn btn-ghost" onClick={() => navigate(-1)}>← Back</button>
         }
       />
       <div className="page-content">
@@ -50,7 +49,7 @@ export default function ItemDetail() {
             )}
 
             <p className="detail-description">
-              Listed by a verified student. Message the seller for details on condition, pickup, and availability.
+              This item is listed by a verified student on Campus Cart. Contact the seller for more details about condition, pickup location, and availability.
             </p>
 
             <div className="detail-meta">
@@ -69,7 +68,7 @@ export default function ItemDetail() {
                 {item.price?.includes("/") ? "Rent Now" : "Buy Now"}
               </button>
               <button className="btn btn-outline btn-lg">
-                <Icon name="message" size={16} /> Message Seller
+                💬 Message Seller
               </button>
             </div>
           </div>
