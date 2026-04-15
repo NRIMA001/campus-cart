@@ -62,7 +62,7 @@ export default function Rent() {
         <CategoryTabs active={category} onChange={setCategory} />
         {filtered.length === 0 ? (
           <EmptyState
-            icon="search"
+            icon="🔍"
             title="No items found"
             message={search ? `No items match "${search}"` : "No items in this category yet"}
           />
