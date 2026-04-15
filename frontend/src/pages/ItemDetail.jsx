@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import Topbar from "../components/Topbar";
 import Icon from "../components/Icon";
+import { getItemById, mockRentItems } from "../data/mockData";
 import ItemCard from "../components/ItemCard";
 import EmptyState from "../components/EmptyState";
 import { useCart } from "../contexts/CartContext";
@@ -21,7 +22,7 @@ export default function ItemDetail() {
       <>
         <Topbar title="Item Not Found" />
         <div className="page-content">
-          <EmptyState icon="alert-circle" title="Item not found" message="This item may have been removed" />
+          <EmptyState icon="😕" title="Item not found" message="This item may have been removed" />
         </div>
       </>
     );
@@ -45,16 +46,7 @@ export default function ItemDetail() {
       <Topbar
         title="Product Details"
         actions={
-          <div className="detail-topbar-actions">
-            <button className="btn btn-ghost" onClick={() => navigate(-1)}>
-              <Icon name="arrow-left" size={14} /> Back
-            </button>
-            <Link to="/checkout" className="btn btn-outline detail-cart-btn">
-              <Icon name="shopping-cart" size={15} />
-              Cart
-              {cartCount > 0 && <span className="cart-badge-sm">{cartCount}</span>}
-            </Link>
-          </div>
+          <button className="btn btn-ghost" onClick={() => navigate(-1)}><Icon name="arrow-left" size={14} /> Back</button>
         }
       />
       <div className="page-content">
@@ -114,12 +106,9 @@ export default function ItemDetail() {
               </div>
             )}
 
-            <div className="detail-description-section">
-              <h3 className="detail-section-title">Description</h3>
-              <p className="detail-description">
-                {item.description || "Listed by a verified student. Message the seller for details on condition, pickup, and availability."}
-              </p>
-            </div>
+            <p className="detail-description">
+              Listed by a verified student. Message the seller for details on condition, pickup, and availability.
+            </p>
 
             {/* Meta grid */}
             <div className="detail-meta">
@@ -174,33 +163,14 @@ export default function ItemDetail() {
                   </button>
                 </div>
 
-                <div className="detail-actions">
-                  <button
-                    className={`btn btn-accent btn-lg detail-add-btn ${addedFeedback ? "added" : ""}`}
-                    onClick={handleAddToCart}
-                  >
-                    <Icon name={addedFeedback ? "check-circle" : "shopping-cart"} size={17} />
-                    {addedFeedback
-                      ? "Added to Cart!"
-                      : alreadyInCart
-                      ? "Add More to Cart"
-                      : isRental
-                      ? "Add Rental to Cart"
-                      : "Add to Cart"}
-                  </button>
-                  <button className="btn btn-outline btn-lg">
-                    <Icon name="message" size={16} /> Message Seller
-                  </button>
-                </div>
-
-                {alreadyInCart && !addedFeedback && (
-                  <Link to="/checkout" className="detail-go-checkout">
-                    <Icon name="shopping-cart" size={14} />
-                    Already in cart — Go to Checkout
-                  </Link>
-                )}
-              </div>
-            )}
+            <div className="detail-actions">
+              <button className="btn btn-accent btn-lg">
+                {item.price?.includes("/") ? "Rent Now" : "Buy Now"}
+              </button>
+              <button className="btn btn-outline btn-lg">
+                <Icon name="message" size={16} /> Message Seller
+              </button>
+            </div>
           </div>
         </div>
 
