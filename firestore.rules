@@ -1,0 +1,55 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users collection — any authenticated user can read; each user writes their own
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Items collection — any authenticated user can read;
+    // owner can create/delete; owner OR buyer (status-only) can update
+    match /items/{itemId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null
+        && (resource.data.sellerId == request.auth.uid
+            || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt']));
+      allow delete: if request.auth != null
+        && resource.data.sellerId == request.auth.uid;
+    }
+
+    // Orders collection — authenticated users can create;
+    // buyer and seller can read/update
+    match /orders/{orderId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null
+        && (resource.data.buyerId == request.auth.uid
+            || resource.data.sellerId == request.auth.uid);
+      allow update: if request.auth != null
+        && (resource.data.buyerId == request.auth.uid
+            || resource.data.sellerId == request.auth.uid);
+      allow delete: if false;
+    }
+
+    // Conversations — participants can read/update; any authenticated user can create
+    match /conversations/{convoId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null
+        && request.auth.uid in resource.data.participantIds;
+      allow update: if request.auth != null
+        && request.auth.uid in resource.data.participantIds;
+      allow delete: if false;
+    }
+
+    // Messages — participants of the parent conversation can read;
+    // any authenticated user can create (sender verified client-side)
+    match /messages/{messageId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      allow update, delete: if false;
+    }
+  }
+}

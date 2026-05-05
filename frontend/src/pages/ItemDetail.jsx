@@ -1,21 +1,72 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import Topbar from "../components/Topbar";
 import Icon from "../components/Icon";
-import { getItemById, mockRentItems } from "../data/mockData";
 import ItemCard from "../components/ItemCard";
 import EmptyState from "../components/EmptyState";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { useCart } from "../contexts/CartContext";
+import { useAuth } from "../contexts/AuthContext";
 import { getItemById, getAllItems } from "../data/mockData";
+import { fetchItemById, fetchItems, createOrder, updateItem } from "../services/firestoreService";
 import "./ItemDetail.css";
 
 export default function ItemDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const item = getItemById(id);
   const { addToCart, isInCart, cartCount } = useCart();
+  const { user, userProfile } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [addedFeedback, setAddedFeedback] = useState(false);
+  const [processing, setProcessing] = useState(false);
+
+  const [item, setItem] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadItem() {
+      setLoading(true);
+
+      // Try mock data first (numeric IDs)
+      const mockItem = getItemById(id);
+      if (mockItem) {
+        setItem(mockItem);
+        // Get related from mock
+        const allMock = getAllItems();
+        setRelated(allMock.filter(i => i.category === mockItem.category && i.id !== mockItem.id).slice(0, 4));
+        setLoading(false);
+        return;
+      }
+
+      // Try Firestore (string doc IDs)
+      try {
+        const fsItem = await fetchItemById(id);
+        if (fsItem) {
+          setItem(fsItem);
+          // Get related from Firestore
+          const typeItems = await fetchItems(fsItem.type || "buy");
+          setRelated(typeItems.filter(i => i.category === fsItem.category && i.id !== fsItem.id).slice(0, 4));
+        }
+      } catch (err) {
+        console.error("Error loading item:", err);
+      }
+
+      setLoading(false);
+    }
+    loadItem();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <>
+        <Topbar title="Product Details" />
+        <div className="page-content">
+          <LoadingSpinner message="Loading item details…" />
+        </div>
+      </>
+    );
+  }
 
   if (!item) {
     return (
@@ -30,10 +81,61 @@ export default function ItemDetail() {
 
   const isRental = item.price?.includes("/");
   const alreadyInCart = isInCart(item.id);
+  const isMockItem = typeof item.id === "number";
+  const isOwnItem = item.sellerId && user && item.sellerId === user.uid;
+  const isSoldOrRented = item.status === "Sold" || item.status === "On Rent";
 
-  const related = getAllItems()
-    .filter(i => i.category === item.category && i.id !== item.id)
-    .slice(0, 4);
+  /* ── Handle "Buy Now" / "Rent Now" click ── */
+  const handleBuyOrRent = async () => {
+    if (isSoldOrRented) return;
+
+    // For mock items, just add to cart
+    if (isMockItem) {
+      addToCart(item, quantity);
+      setAddedFeedback(true);
+      setTimeout(() => setAddedFeedback(false), 2000);
+      navigate("/checkout");
+      return;
+    }
+
+    // For Firestore items, create an order and update item status
+    setProcessing(true);
+    try {
+      // Create order record
+      await createOrder({
+        itemId: item.id,
+        itemName: item.name,
+        itemImage: item.image,
+        itemPrice: item.price,
+        numericPrice: item.numericPrice || 0,
+        category: item.category,
+        type: isRental ? "rental" : "purchase",
+        buyerId: user.uid,
+        buyerName: userProfile?.fullName || "Student",
+        buyerEmail: user.email,
+        sellerId: item.sellerId,
+        sellerName: item.sellerName || item.seller || "Student",
+        university: item.university || "Campus",
+        quantity,
+      });
+
+      // Update item status
+      const newStatus = isRental ? "On Rent" : "Sold";
+      await updateItem(item.id, { status: newStatus });
+      setItem({ ...item, status: newStatus });
+
+      // Also add to cart for the checkout flow
+      addToCart(item, quantity);
+      navigate("/checkout");
+    } catch (err) {
+      console.error("Error processing order:", err);
+      // If the Firestore order fails, still allow cart-based flow
+      addToCart(item, quantity);
+      navigate("/checkout");
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   const handleAddToCart = () => {
     addToCart(item, quantity);
@@ -67,7 +169,7 @@ export default function ItemDetail() {
               <img src={item.image} alt={item.name} className="detail-image" />
               <span className="badge badge-navy detail-category">{item.category}</span>
               {item.status && (
-                <span className={`badge detail-status ${item.status === "Available" ? "badge-success" : "badge-warning"}`}>
+                <span className={`badge detail-status ${item.status === "Available" ? "badge-success" : item.status === "Sold" ? "badge-danger" : "badge-warning"}`}>
                   {item.status}
                 </span>
               )}
@@ -106,9 +208,13 @@ export default function ItemDetail() {
               </div>
             )}
 
-            <p className="detail-description">
-              Listed by a verified student. Message the seller for details on condition, pickup, and availability.
-            </p>
+            {item.description ? (
+              <p className="detail-description">{item.description}</p>
+            ) : (
+              <p className="detail-description">
+                Listed by a verified student. Message the seller for details on condition, pickup, and availability.
+              </p>
+            )}
 
             {/* Meta grid */}
             <div className="detail-meta">
@@ -116,7 +222,7 @@ export default function ItemDetail() {
                 <Icon name="user" size={14} color="var(--color-text-muted)" />
                 <div>
                   <span className="detail-meta-label">Seller</span>
-                  <span className="detail-meta-value">{item.seller || "Verified Student"}</span>
+                  <span className="detail-meta-value">{item.sellerName || item.seller || "Verified Student"}</span>
                 </div>
               </div>
               <div className="detail-meta-item">
@@ -142,34 +248,41 @@ export default function ItemDetail() {
               </div>
             </div>
 
-            {/* Quantity + Add to Cart */}
-            {item.seller !== "You" && (
-              <div className="detail-cart-section">
-                <div className="quantity-selector">
-                  <span className="quantity-label">{isRental ? "Days:" : "Qty:"}</span>
-                  <button
-                    className="quantity-btn"
-                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                    disabled={quantity <= 1}
-                  >
-                    <Icon name="minus" size={14} />
-                  </button>
-                  <span className="quantity-value">{quantity}</span>
-                  <button
-                    className="quantity-btn"
-                    onClick={() => setQuantity(q => q + 1)}
-                  >
-                    <Icon name="plus" size={14} />
-                  </button>
-                </div>
-
+            {/* Actions */}
             <div className="detail-actions">
-              <button className="btn btn-accent btn-lg">
-                {item.price?.includes("/") ? "Rent Now" : "Buy Now"}
-              </button>
-              <button className="btn btn-outline btn-lg">
-                <Icon name="message" size={16} /> Message Seller
-              </button>
+              {isOwnItem ? (
+                <button className="btn btn-outline btn-lg" disabled>
+                  <Icon name="user" size={16} /> This Is Your Listing
+                </button>
+              ) : isSoldOrRented ? (
+                <button className="btn btn-lg" disabled style={{ opacity: 0.6 }}>
+                  {item.status === "Sold" ? "Item Sold" : "Currently Rented"}
+                </button>
+              ) : (
+                <button
+                  className="btn btn-accent btn-lg"
+                  onClick={handleBuyOrRent}
+                  disabled={processing}
+                >
+                  {processing ? (
+                    <>Processing…</>
+                  ) : addedFeedback ? (
+                    <><Icon name="check-circle" size={16} /> Added!</>
+                  ) : (
+                    <>{isRental ? "Rent Now" : "Buy Now"}</>
+                  )}
+                </button>
+              )}
+              {!isOwnItem && item.sellerId && (
+                <button
+                  className="btn btn-outline btn-lg"
+                  onClick={() => navigate(
+                    `/messages?to=${item.sellerId}&toName=${encodeURIComponent(item.sellerName || item.seller || "Student")}&itemId=${item.id}&itemName=${encodeURIComponent(item.name)}&itemImage=${encodeURIComponent(item.image || "")}`
+                  )}
+                >
+                  <Icon name="message" size={16} /> Message Seller
+                </button>
+              )}
             </div>
           </div>
         </div>

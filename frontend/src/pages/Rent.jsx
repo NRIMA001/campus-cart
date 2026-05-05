@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Topbar from "../components/Topbar";
 import CategoryTabs from "../components/CategoryTabs";
 import ItemGrid from "../components/ItemGrid";
 import ItemCard from "../components/ItemCard";
 import EmptyState from "../components/EmptyState";
+import LoadingSpinner from "../components/LoadingSpinner";
 import Icon from "../components/Icon";
 import { useCart } from "../contexts/CartContext";
 import { mockRentItems } from "../data/mockData";
+import { fetchItems } from "../services/firestoreService";
 
 export default function Rent() {
   const [search, setSearch] = useState("");
@@ -16,6 +18,19 @@ export default function Rent() {
   const [favorites, setFavorites] = useState(() => {
     try { return JSON.parse(localStorage.getItem("favorites")) || []; } catch { return []; }
   });
+
+  const [firestoreItems, setFirestoreItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchItems("rent")
+      .then((items) => setFirestoreItems(items))
+      .catch((err) => console.error("Error loading rent items:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Combine mock data + real Firestore items
+  const allItems = [...mockRentItems, ...firestoreItems];
 
   const toggleFavorite = (id) => {
     setFavorites(prev => {
@@ -29,7 +44,7 @@ export default function Rent() {
     addToCart(item, 1);
   };
 
-  const filtered = mockRentItems
+  const filtered = allItems
     .filter(item => category === "All" || item.category === category)
     .filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -60,7 +75,9 @@ export default function Rent() {
       />
       <div className="page-content">
         <CategoryTabs active={category} onChange={setCategory} />
-        {filtered.length === 0 ? (
+        {loading ? (
+          <LoadingSpinner message="Loading rent items…" />
+        ) : filtered.length === 0 ? (
           <EmptyState
             icon="🔍"
             title="No items found"

@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Topbar from "../components/Topbar";
 import CategoryTabs from "../components/CategoryTabs";
 import ItemGrid from "../components/ItemGrid";
 import ItemCard from "../components/ItemCard";
 import EmptyState from "../components/EmptyState";
+import LoadingSpinner from "../components/LoadingSpinner";
 import Icon from "../components/Icon";
 import { useCart } from "../contexts/CartContext";
 import { mockBuyItems } from "../data/mockData";
+import { fetchItems } from "../services/firestoreService";
 
 export default function Buy() {
   const [search, setSearch] = useState("");
@@ -16,6 +18,19 @@ export default function Buy() {
   const [favorites, setFavorites] = useState(() => {
     try { return JSON.parse(localStorage.getItem("favorites")) || []; } catch { return []; }
   });
+
+  const [firestoreItems, setFirestoreItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchItems("buy")
+      .then((items) => setFirestoreItems(items))
+      .catch((err) => console.error("Error loading buy items:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Combine mock data + real Firestore items
+  const allItems = [...mockBuyItems, ...firestoreItems];
 
   const toggleFavorite = (id) => {
     setFavorites(prev => {
@@ -29,7 +44,7 @@ export default function Buy() {
     addToCart(item, 1);
   };
 
-  const filtered = mockBuyItems
+  const filtered = allItems
     .filter(item => category === "All" || item.category === category)
     .filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -60,7 +75,9 @@ export default function Buy() {
       />
       <div className="page-content">
         <CategoryTabs active={category} onChange={setCategory} />
-        {filtered.length === 0 ? (
+        {loading ? (
+          <LoadingSpinner message="Loading items for sale…" />
+        ) : filtered.length === 0 ? (
           <EmptyState
             icon="🛒"
             title="No items found"

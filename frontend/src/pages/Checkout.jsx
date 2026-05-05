@@ -4,15 +4,19 @@ import Topbar from "../components/Topbar";
 import Icon from "../components/Icon";
 import EmptyState from "../components/EmptyState";
 import { useCart } from "../contexts/CartContext";
+import { useAuth } from "../contexts/AuthContext";
+import { createOrder, updateItem } from "../services/firestoreService";
 import "./Checkout.css";
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { cartItems, removeFromCart, updateQuantity, clearCart, cartTotal } = useCart();
+  const { user, userProfile } = useAuth();
   const [step, setStep] = useState("cart"); // cart | details | confirmation
+  const [placing, setPlacing] = useState(false);
   const [form, setForm] = useState({
-    fullName: "",
-    email: "",
+    fullName: userProfile?.fullName || "",
+    email: user?.email || "",
     phone: "",
     pickupLocation: "",
     notes: "",
@@ -20,8 +24,55 @@ export default function Checkout() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
+    setPlacing(true);
+
+    try {
+      // Create an order for each cart item in Firestore
+      for (const ci of cartItems) {
+        const isMock = typeof ci.id === "number";
+        const isRental = ci.price?.includes("/");
+
+        if (!isMock) {
+          // Create order record in Firestore
+          try {
+            await createOrder({
+              itemId: ci.id,
+              itemName: ci.name,
+              itemImage: ci.image,
+              itemPrice: ci.price,
+              numericPrice: ci.numericPrice || 0,
+              category: ci.category,
+              type: isRental ? "rental" : "purchase",
+              buyerId: user.uid,
+              buyerName: userProfile?.fullName || "Student",
+              buyerEmail: user.email,
+              sellerId: ci.sellerId || "",
+              sellerName: ci.sellerName || ci.seller || "Student",
+              university: ci.university || "Campus",
+              quantity: ci.quantity,
+              pickupLocation: form.pickupLocation,
+              contactEmail: form.email,
+              contactPhone: form.phone,
+              notes: form.notes,
+            });
+
+            // Update item status in Firestore
+            const newStatus = isRental ? "On Rent" : "Sold";
+            await updateItem(ci.id, { status: newStatus });
+          } catch (orderErr) {
+            console.warn(`Order creation for ${ci.name} encountered an issue:`, orderErr.message);
+            // Continue placing remaining orders even if one fails
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error placing order:", err);
+    } finally {
+      setPlacing(false);
+    }
+
     setStep("confirmation");
     clearCart();
   };
@@ -221,8 +272,16 @@ export default function Checkout() {
                       />
                     </div>
 
-                    <button type="submit" className="btn btn-accent btn-lg btn-full checkout-place-btn">
-                      <Icon name="check-circle" size={17} /> Place Order — ${grandTotal.toFixed(2)}
+                    <button
+                      type="submit"
+                      className="btn btn-accent btn-lg btn-full checkout-place-btn"
+                      disabled={placing}
+                    >
+                      {placing ? (
+                        <>Processing Order…</>
+                      ) : (
+                        <><Icon name="check-circle" size={17} /> Place Order — ${grandTotal.toFixed(2)}</>
+                      )}
                     </button>
                     <p className="checkout-disclaimer">
                       <Icon name="shield" size={12} /> Payment is handled directly between students at pickup. Campus Cart does not process payments.

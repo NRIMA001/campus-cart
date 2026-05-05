@@ -69,6 +69,8 @@ const paths = {
     "M21 4H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V6a2 2 0 00-2-2zM1 10h22",
   user:
     "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z",
+  send:
+    "M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z",
 };
 
 export default function Icon({ name, size = 18, color = "currentColor", strokeWidth = 1.8, className = "" }) {

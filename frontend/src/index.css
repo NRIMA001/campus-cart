@@ -300,6 +300,11 @@ textarea.input {
   color: #ca8a04;
 }
 
+.badge-danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
 /* ---------- Auth Page Shared Styles ---------- */
 .auth-wrapper {
   height: 100vh;
