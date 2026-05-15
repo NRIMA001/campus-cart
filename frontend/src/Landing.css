@@ -17,8 +17,14 @@
 }
 
 .landing-logo {
-  height: 40px;
+  height: 72px;
   object-fit: contain;
+  mix-blend-mode: screen;
+  transition: opacity 0.2s ease;
+}
+
+.landing-logo:hover {
+  opacity: 0.85;
 }
 
 .landing-nav-links {

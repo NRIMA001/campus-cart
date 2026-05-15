@@ -136,6 +136,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-primary:hover {
   background: var(--color-navy-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 29, 46, 0.25);
 }
 
 .btn-accent {
@@ -146,6 +148,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-accent:hover {
   background: var(--color-accent-hover);
   box-shadow: var(--shadow-accent);
+  transform: translateY(-1px);
 }
 
 .btn-outline {
@@ -157,6 +160,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-outline:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
+  background: var(--color-accent-soft);
 }
 
 .btn-ghost {

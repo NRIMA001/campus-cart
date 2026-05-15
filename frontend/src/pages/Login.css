@@ -4,8 +4,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #eef1f7 0%, #dde3ef 100%);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0f1d2e 0%, #1a2f4a 50%, #0f1d2e 100%);
+  font-family: var(--font-body);
 }
 
 /* Login card */
@@ -14,8 +14,9 @@
   padding: 48px 44px;
   width: 400px;
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
   text-align: center;
+  animation: scaleIn 0.3s ease;
 }
 
 /* Logo styling — centered, right above the heading */
@@ -30,7 +31,9 @@
   margin-bottom: 6px;
   font-size: 26px;
   font-weight: 700;
+  font-family: var(--font-heading);
   color: #111;
+  letter-spacing: -0.5px;
 }
 
 .subtitle {
@@ -47,36 +50,51 @@
   border-radius: 10px;
   border: 1.5px solid #e5e5e5;
   font-size: 14px;
+  font-family: var(--font-body);
   background: #fafafa;
   box-sizing: border-box;
-  transition: 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .login-card input:focus {
   outline: none;
-  border-color: #111;
+  border-color: var(--color-accent);
   background: white;
+  box-shadow: 0 0 0 3px rgba(220, 80, 60, 0.08);
 }
 
 /* Button */
 .login-card button {
   width: 100%;
   padding: 13px;
-  background-color: #111;
+  background-color: var(--color-navy);
   color: white;
   border: none;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
+  font-family: var(--font-body);
   cursor: pointer;
   margin-top: 4px;
-  transition: 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .login-card button:hover {
-  background-color: #333;
+  background-color: var(--color-navy-light);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px rgba(15, 29, 46, 0.3);
+}
+
+/* Demo hint */
+.demo-hint {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  border: 1px solid rgba(220, 80, 60, 0.15);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  margin-top: 16px;
+  line-height: 1.5;
 }
 
 /* Register text */
@@ -89,7 +107,7 @@
 .register-text a {
   text-decoration: none;
   font-weight: 600;
-  color: #000;
+  color: var(--color-accent);
 }
 
 .register-text a:hover {

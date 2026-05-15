@@ -21,6 +21,7 @@ export default function Sell() {
   const [form, setForm] = useState({ name: "", category: "Devices", price: "", description: "", condition: "Good" });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [imageDataUrl, setImageDataUrl] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -38,6 +39,9 @@ export default function Sell() {
     if (file) {
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => setImageDataUrl(reader.result);
+      reader.readAsDataURL(file);
     }
   };
 
@@ -53,7 +57,8 @@ export default function Sell() {
         try {
           imageUrl = await uploadItemImage(imageFile, user.uid);
         } catch (uploadErr) {
-          console.warn("Image upload failed, using default image:", uploadErr.message);
+          console.warn("Image upload failed, using local image:", uploadErr.message);
+          if (imageDataUrl) imageUrl = imageDataUrl;
         }
       }
 
@@ -76,6 +81,7 @@ export default function Sell() {
       setForm({ name: "", category: "Devices", price: "", description: "", condition: "Good" });
       setImageFile(null);
       setImagePreview(null);
+      setImageDataUrl(null);
       setShowForm(false);
     } catch (err) {
       console.error("Error creating listing:", err);

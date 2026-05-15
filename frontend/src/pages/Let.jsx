@@ -21,6 +21,7 @@ export default function Let() {
   const [form, setForm] = useState({ name: "", category: "Devices", price: "", description: "", condition: "Good" });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [imageDataUrl, setImageDataUrl] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -37,7 +38,11 @@ export default function Let() {
     const file = e.target.files[0];
     if (file) {
       setImageFile(file);
+      // Create both a blob URL for preview and a data URL as upload fallback
       setImagePreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => setImageDataUrl(reader.result);
+      reader.readAsDataURL(file);
     }
   };
 
@@ -53,7 +58,9 @@ export default function Let() {
         try {
           imageUrl = await uploadItemImage(imageFile, user.uid);
         } catch (uploadErr) {
-          console.warn("Image upload failed, using default image:", uploadErr.message);
+          console.warn("Image upload failed, using local image:", uploadErr.message);
+          // Use the user's selected photo as a data URL fallback
+          if (imageDataUrl) imageUrl = imageDataUrl;
         }
       }
 
@@ -77,6 +84,7 @@ export default function Let() {
       setForm({ name: "", category: "Devices", price: "", description: "", condition: "Good" });
       setImageFile(null);
       setImagePreview(null);
+      setImageDataUrl(null);
       setShowForm(false);
     } catch (err) {
       console.error("Error creating listing:", err);
